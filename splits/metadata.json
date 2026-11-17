@@ -1,0 +1,41 @@
+{
+  "seed": 42,
+  "requested_validation_fraction": 0.2,
+  "strategy": "per-class shuffle of complete tracks; round nearest track count",
+  "actual_validation_fraction": 0.19967354433930984,
+  "counts": {
+    "train": 31380,
+    "validation": 7829,
+    "test": 12630
+  },
+  "tracks": {
+    "train": 1046,
+    "validation": 261
+  },
+  "classes": 43,
+  "decode_errors": 0,
+  "metadata_warnings": 0,
+  "split_sha256": {
+    "train": "cea8fc60d2477964ce48869452e38b7eae5c48deecac8d5bd196be6a653895cc",
+    "validation": "a977d7c2d84686ba3ed997c27387c4b652848549cbee355bc337bf553111c58f",
+    "test": "d6cac5a573024a6ef0fa7352ccba098de7cf8735e7847c6fbd5371e1c99b8017"
+  },
+  "inventory_sha256": "e522fcf1ef5f7efc341be77a64c18fe0c52664b71f345fb60bd6146619490312",
+  "preprocessing": {
+    "size": [
+      64,
+      64
+    ],
+    "roi_crop": false,
+    "input": "uint8 BGR",
+    "resize": "INTER_AREA if shrinking both axes, otherwise INTER_LINEAR"
+  },
+  "numpy_version": "2.3.1",
+  "opencv_version": "4.14.0",
+  "environment": {
+    "python": "3.13.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "pandas": "2.3.1",
+    "matplotlib": "3.10.7"
+  }
+}

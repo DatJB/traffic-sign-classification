@@ -1,0 +1,11 @@
+sample,original_path,class_id,split
+class_00_00000_00000.ppm,GTSRB/Final_Training/Images/00000/00000_00000.ppm,0,train
+class_01_00001_00000.ppm,GTSRB/Final_Training/Images/00001/00001_00000.ppm,1,train
+class_02_00000_00000.ppm,GTSRB/Final_Training/Images/00002/00000_00000.ppm,2,train
+class_03_00000_00000.ppm,GTSRB/Final_Training/Images/00003/00000_00000.ppm,3,train
+class_04_00001_00000.ppm,GTSRB/Final_Training/Images/00004/00001_00000.ppm,4,train
+class_05_00000_00000.ppm,GTSRB/Final_Training/Images/00005/00000_00000.ppm,5,train
+class_06_00000_00000.ppm,GTSRB/Final_Training/Images/00006/00000_00000.ppm,6,train
+class_07_00000_00000.ppm,GTSRB/Final_Training/Images/00007/00000_00000.ppm,7,train
+class_08_00001_00000.ppm,GTSRB/Final_Training/Images/00008/00001_00000.ppm,8,train
+class_09_00000_00000.ppm,GTSRB/Final_Training/Images/00009/00000_00000.ppm,9,train

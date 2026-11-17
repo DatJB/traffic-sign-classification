@@ -1,0 +1,79 @@
+{
+  "method": "HSV + HOG + kNN",
+  "split": "validation",
+  "train_images": 31380,
+  "validation_images": 7829,
+  "search_budget": 12,
+  "selection_metric": "macro_f1",
+  "best": {
+    "hsv_weight": 0.25,
+    "hog_weight": 0.75,
+    "h_bins": 16,
+    "s_bins": 4,
+    "v_bins": 4,
+    "cell_size": 8,
+    "k": 7,
+    "distance": "manhattan",
+    "weights": "uniform",
+    "n_features": 2020,
+    "accuracy": 0.8026567888619236,
+    "macro_f1": 0.7623164011322069,
+    "train_feature_seconds": 195.60801600007107,
+    "validation_feature_seconds": 144.30344790004892,
+    "fit_seconds": 0.0952038999530486,
+    "predict_seconds": 175.71555870003067,
+    "classifier_ms_per_image": 22.44418938562149,
+    "end_to_end_ms_per_image": 40.876102516295774
+  },
+  "split_sha256": {
+    "train": "cea8fc60d2477964ce48869452e38b7eae5c48deecac8d5bd196be6a653895cc",
+    "validation": "a977d7c2d84686ba3ed997c27387c4b652848549cbee355bc337bf553111c58f"
+  },
+  "component_selection": "bins/cell inherited from HSV/HOG validation; 12 additional fusion configurations",
+  "component_best": {
+    "hsv": {
+      "h_bins": 16,
+      "s_bins": 4,
+      "v_bins": 4,
+      "k": 3,
+      "distance": "manhattan",
+      "weights": "uniform",
+      "n_features": 256,
+      "accuracy": 0.17447949929748371,
+      "macro_f1": 0.1340654060250324,
+      "train_feature_seconds": 11.313880299974699,
+      "validation_feature_seconds": 3.1681924000149593,
+      "fit_seconds": 0.006747299979906529,
+      "predict_seconds": 19.40125250001438,
+      "classifier_ms_per_image": 2.4781265167983624,
+      "end_to_end_ms_per_image": 2.8828004726056125
+    },
+    "hog": {
+      "cell_size": 8,
+      "block_cells": 2,
+      "block_stride": 8,
+      "orientations": 9,
+      "k": 7,
+      "distance": "manhattan",
+      "weights": "uniform",
+      "n_features": 1764,
+      "accuracy": 0.8219440541576191,
+      "macro_f1": 0.776101736998559,
+      "train_feature_seconds": 29.6048297000234,
+      "validation_feature_seconds": 7.583234999969136,
+      "fit_seconds": 0.03381619998253882,
+      "predict_seconds": 141.85070050001377,
+      "classifier_ms_per_image": 18.11862313194709,
+      "end_to_end_ms_per_image": 19.087231511046483
+    }
+  },
+  "test_evaluated": false,
+  "environment": {
+    "python": "3.13.2",
+    "numpy": "2.3.1",
+    "sklearn": "1.9.0",
+    "threads": 4
+  },
+  "recovery_note": "11 completed scores preserved; last configuration resumed using cached train descriptors in base models after split hashes/labels matched; selected model refit on train and validation scores reverified.",
+  "timing_note": "Validation session interrupted. Train extraction time of resumed configuration is unavailable (null); remaining timing includes cached train features and is not a speed benchmark."
+}

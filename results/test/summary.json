@@ -1,0 +1,60 @@
+{
+  "split": "test",
+  "frozen_config": "configs/final_experiment.json",
+  "results": [
+    {
+      "method": "HSV + kNN",
+      "split": "test",
+      "n_images": 12630,
+      "experiment_sha256": "3ab1f75761586ea2636fa6df7ff5a01c1cf489f6f28a2f6fe3e6d8899bab706a",
+      "accuracy": 0.16991290577988916,
+      "macro_f1": 0.1499862189348892,
+      "n_features": 256,
+      "feature_seconds": 7.443920398596674,
+      "predict_seconds": 59.265440899995156,
+      "classifier_ms_per_image": 4.692433958827803,
+      "end_to_end_ms_per_image": 5.281817996721443
+    },
+    {
+      "method": "HOG + kNN",
+      "split": "test",
+      "n_images": 12630,
+      "experiment_sha256": "3ab1f75761586ea2636fa6df7ff5a01c1cf489f6f28a2f6fe3e6d8899bab706a",
+      "accuracy": 0.8054631828978622,
+      "macro_f1": 0.7766791971462371,
+      "n_features": 1764,
+      "feature_seconds": 9.5019774006214,
+      "predict_seconds": 720.6361097999616,
+      "classifier_ms_per_image": 57.05749087885681,
+      "end_to_end_ms_per_image": 57.80982479814592
+    },
+    {
+      "method": "HSV + HOG + kNN",
+      "split": "test",
+      "n_images": 12630,
+      "experiment_sha256": "3ab1f75761586ea2636fa6df7ff5a01c1cf489f6f28a2f6fe3e6d8899bab706a",
+      "accuracy": 0.792874109263658,
+      "macro_f1": 0.7644450892838369,
+      "n_features": 2020,
+      "feature_seconds": 13.992117294401396,
+      "predict_seconds": 1002.3283826000406,
+      "classifier_ms_per_image": 79.36091707047036,
+      "end_to_end_ms_per_image": 80.46876483724799
+    }
+  ],
+  "experiment_sha256": "3ab1f75761586ea2636fa6df7ff5a01c1cf489f6f28a2f6fe3e6d8899bab706a",
+  "environment": {
+    "python": "3.13.2",
+    "numpy": "2.3.1",
+    "sklearn": "1.9.0",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "threads": 4
+  },
+  "shared_feature_stage_seconds": {
+    "read": 4.694617299828678,
+    "hsv": 2.7315179987926967,
+    "hog": 4.726102100801654,
+    "combine": 1.7318377949413843
+  },
+  "timing_note": "Shared image read and HSV/HOG extraction, timed per stage; each method is charged for its own stages including shared read. One prediction batch per model. No tuning or refit based on test."
+}

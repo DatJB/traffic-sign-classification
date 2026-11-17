@@ -1,0 +1,83 @@
+{
+  "selection_split": "validation",
+  "evaluation_split": "official_test",
+  "training_scope": "31380 train only, no refit on validation",
+  "split_sha256": {
+    "train": "cea8fc60d2477964ce48869452e38b7eae5c48deecac8d5bd196be6a653895cc",
+    "validation": "a977d7c2d84686ba3ed997c27387c4b652848549cbee355bc337bf553111c58f",
+    "test": "d6cac5a573024a6ef0fa7352ccba098de7cf8735e7847c6fbd5371e1c99b8017"
+  },
+  "models": {
+    "hsv": {
+      "path": "models/hsv_knn.joblib",
+      "sha256": "fad64745ba436066c161751a59da8f674083877637cf45b6cab2cd9fe267391b",
+      "selected_parameters": {
+        "h_bins": 16,
+        "s_bins": 4,
+        "v_bins": 4,
+        "k": 3,
+        "distance": "manhattan",
+        "weights": "uniform",
+        "n_features": 256,
+        "accuracy": 0.17447949929748371,
+        "macro_f1": 0.1340654060250324,
+        "train_feature_seconds": 11.313880299974699,
+        "validation_feature_seconds": 3.1681924000149593,
+        "fit_seconds": 0.006747299979906529,
+        "predict_seconds": 19.40125250001438,
+        "classifier_ms_per_image": 2.4781265167983624,
+        "end_to_end_ms_per_image": 2.8828004726056125
+      }
+    },
+    "hog": {
+      "path": "models/hog_knn.joblib",
+      "sha256": "b10be452d59c8f0ed416b2965413d83a1262fe065517996180d54843a1ac7fde",
+      "selected_parameters": {
+        "cell_size": 8,
+        "block_cells": 2,
+        "block_stride": 8,
+        "orientations": 9,
+        "k": 7,
+        "distance": "manhattan",
+        "weights": "uniform",
+        "n_features": 1764,
+        "accuracy": 0.8219440541576191,
+        "macro_f1": 0.776101736998559,
+        "train_feature_seconds": 29.6048297000234,
+        "validation_feature_seconds": 7.583234999969136,
+        "fit_seconds": 0.03381619998253882,
+        "predict_seconds": 141.85070050001377,
+        "classifier_ms_per_image": 18.11862313194709,
+        "end_to_end_ms_per_image": 19.087231511046483
+      }
+    },
+    "combined": {
+      "path": "models/combined_knn.joblib",
+      "sha256": "6e114cc96e06a9a9d307d05845c5be327a0b8c30a205139e685f6fcf050dd17b",
+      "selected_parameters": {
+        "hsv_weight": 0.25,
+        "hog_weight": 0.75,
+        "h_bins": 16,
+        "s_bins": 4,
+        "v_bins": 4,
+        "cell_size": 8,
+        "k": 7,
+        "distance": "manhattan",
+        "weights": "uniform",
+        "n_features": 2020,
+        "accuracy": 0.8026567888619236,
+        "macro_f1": 0.7623164011322069,
+        "train_feature_seconds": 195.60801600007107,
+        "validation_feature_seconds": 144.30344790004892,
+        "fit_seconds": 0.0952038999530486,
+        "predict_seconds": 175.71555870003067,
+        "classifier_ms_per_image": 22.44418938562149,
+        "end_to_end_ms_per_image": 40.876102516295774
+      }
+    }
+  },
+  "image_archive_sha256": {
+    "GTSRB_Final_Training_Images.zip": "d32ac4b5fa9a1cbd1994768413902e8193599d9434cf0a8eb9cfd00a6d3a290c",
+    "GTSRB_Final_Test_Images.zip": "48ba6fab7e877eb64eaf8de99035b0aaecfbc279bee23e35deca4ac1d0a837fa"
+  }
+}

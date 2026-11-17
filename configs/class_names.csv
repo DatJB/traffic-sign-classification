@@ -1,0 +1,44 @@
+class_id,name_en,name_vi
+0,Speed limit (20 km/h),Giới hạn tốc độ 20 km/h
+1,Speed limit (30 km/h),Giới hạn tốc độ 30 km/h
+2,Speed limit (50 km/h),Giới hạn tốc độ 50 km/h
+3,Speed limit (60 km/h),Giới hạn tốc độ 60 km/h
+4,Speed limit (70 km/h),Giới hạn tốc độ 70 km/h
+5,Speed limit (80 km/h),Giới hạn tốc độ 80 km/h
+6,End of speed limit (80 km/h),Hết giới hạn tốc độ 80 km/h
+7,Speed limit (100 km/h),Giới hạn tốc độ 100 km/h
+8,Speed limit (120 km/h),Giới hạn tốc độ 120 km/h
+9,No passing,Cấm vượt
+10,No passing for vehicles over 3.5 metric tons,Cấm vượt đối với xe trên 3.5 tấn
+11,Right-of-way at the next intersection,Ưu tiên tại giao lộ tiếp theo
+12,Priority road,Đường ưu tiên
+13,Yield,Nhường đường
+14,Stop,Dừng lại
+15,No vehicles,Cấm các loại xe
+16,Vehicles over 3.5 metric tons prohibited,Cấm xe trên 3.5 tấn
+17,No entry,Cấm đi vào
+18,General caution,Cảnh báo nguy hiểm chung
+19,Dangerous curve to the left,Đường cong nguy hiểm bên trái
+20,Dangerous curve to the right,Đường cong nguy hiểm bên phải
+21,Double curve,Đường cong kép
+22,Bumpy road,Đường gồ ghề
+23,Slippery road,Đường trơn
+24,Road narrows on the right,Đường hẹp phía bên phải
+25,Road work,Công trường
+26,Traffic signals,Tín hiệu đèn giao thông
+27,Pedestrians,Người đi bộ
+28,Children crossing,Trẻ em qua đường
+29,Bicycles crossing,Xe đạp qua đường
+30,Beware of ice/snow,Cảnh báo băng tuyết
+31,Wild animals crossing,Động vật hoang dã qua đường
+32,End of all speed and passing limits,Hết mọi giới hạn tốc độ và cấm vượt
+33,Turn right ahead,Bắt buộc rẽ phải phía trước
+34,Turn left ahead,Bắt buộc rẽ trái phía trước
+35,Ahead only,Chỉ được đi thẳng
+36,Go straight or right,Đi thẳng hoặc rẽ phải
+37,Go straight or left,Đi thẳng hoặc rẽ trái
+38,Keep right,Đi về bên phải
+39,Keep left,Đi về bên trái
+40,Roundabout mandatory,Bắt buộc đi theo vòng xuyến
+41,End of no passing,Hết cấm vượt
+42,End of no passing by vehicles over 3.5 metric tons,Hết cấm vượt đối với xe trên 3.5 tấn

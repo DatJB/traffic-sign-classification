@@ -1,0 +1,13 @@
+{
+  "method": "HSV + HOG + kNN",
+  "split": "test",
+  "n_images": 12630,
+  "experiment_sha256": "3ab1f75761586ea2636fa6df7ff5a01c1cf489f6f28a2f6fe3e6d8899bab706a",
+  "accuracy": 0.792874109263658,
+  "macro_f1": 0.7644450892838369,
+  "n_features": 2020,
+  "feature_seconds": 13.992117294401396,
+  "predict_seconds": 1002.3283826000406,
+  "classifier_ms_per_image": 79.36091707047036,
+  "end_to_end_ms_per_image": 80.46876483724799
+}

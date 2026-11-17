@@ -1,0 +1,40 @@
+{
+  "method": "HOG + kNN",
+  "split": "validation",
+  "train_images": 31380,
+  "validation_images": 7829,
+  "search_budget": 12,
+  "selection_metric": "macro_f1",
+  "tie_break": "accuracy, fewer features, smaller k, first distance in grid",
+  "best": {
+    "cell_size": 8,
+    "block_cells": 2,
+    "block_stride": 8,
+    "orientations": 9,
+    "k": 7,
+    "distance": "manhattan",
+    "weights": "uniform",
+    "n_features": 1764,
+    "accuracy": 0.8219440541576191,
+    "macro_f1": 0.776101736998559,
+    "train_feature_seconds": 29.6048297000234,
+    "validation_feature_seconds": 7.583234999969136,
+    "fit_seconds": 0.03381619998253882,
+    "predict_seconds": 141.85070050001377,
+    "classifier_ms_per_image": 18.11862313194709,
+    "end_to_end_ms_per_image": 19.087231511046483
+  },
+  "split_sha256": {
+    "train": "cea8fc60d2477964ce48869452e38b7eae5c48deecac8d5bd196be6a653895cc",
+    "validation": "a977d7c2d84686ba3ed997c27387c4b652848549cbee355bc337bf553111c58f"
+  },
+  "environment": {
+    "python": "3.13.2",
+    "numpy": "2.3.1",
+    "sklearn": "1.9.0",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "threads": 4
+  },
+  "timing_note": "One full-validation batch per configuration; end-to-end includes disk read, resize, grayscale, HOG block L2-Hys/global L2 and kNN; excludes manual work. Feature extraction reused across k/metric. Not a repeated latency benchmark.",
+  "test_evaluated": false
+}
