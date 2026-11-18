@@ -26,6 +26,20 @@ assert 'comparison' not in app.session_state.filtered_state
 assert 'prediction' not in app.session_state.filtered_state
 print('Real app: startup, sample prediction, three-model comparison and stale-result clearing passed.', flush=True)
 
+app.radio(key='image_source').set_value('Ảnh validation / test').run()
+assert not app.exception, app.exception
+assert len(app.selectbox(key='dataset_image_validation').options) == 86
+assert 'prediction' not in app.session_state.filtered_state
+app.button(key='classify').click().run()
+assert app.session_state['prediction']['method'] == 'HSV + kNN'
+app.selectbox(key='dataset_split').set_value('test').run()
+assert not app.exception and 'prediction' not in app.session_state.filtered_state
+assert len(app.selectbox(key='dataset_image_test').options) == 86
+app.checkbox(key='reveal_dataset_label').check().run()
+assert any('Nhãn chuẩn:' in info.value for info in app.info)
+assert 'prediction' not in app.session_state.filtered_state
+print('Validation/test images: prediction, split change clears stale result, ground truth stays separate.', flush=True)
+
 # Exercise actual rendering with a resource-free project, without renaming user files.
 source = (root / 'app.py').read_text(encoding='utf-8')
 with tempfile.TemporaryDirectory() as directory:

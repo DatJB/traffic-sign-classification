@@ -4,6 +4,7 @@ from io import BytesIO
 from pathlib import Path
 from threading import RLock
 from time import perf_counter
+from zipfile import ZipFile
 import json
 import warnings
 
@@ -214,3 +215,37 @@ def read_test_results(root=PROJECT_ROOT):
                         for k in ['accuracy', 'macro_f1']) and record.get('n_images', 0) > 0):
             valid.append(record)
     return valid
+
+
+def demo_catalog(split, root=PROJECT_ROOT):
+    """Hai ảnh mỗi lớp, chọn seed cố định; không đọc dự đoán/điểm số mô hình."""
+    if split not in ('validation', 'test'):
+        raise ValueError('Chỉ hỗ trợ tập validation hoặc test.')
+    manifest = Path(root) / 'splits' / f'{split}.csv'
+    if not manifest.exists():
+        raise FileNotFoundError(f'Thiếu splits/{split}.csv. Cần danh sách chia tập của người 1.')
+    table = pd.read_csv(manifest, usecols=['path', 'class_id'])
+    if (table.empty or not table.path.is_unique or not table.class_id.between(0, 42).all()
+            or not (table.class_id % 1 == 0).all()):
+        raise ValueError('Danh sách ảnh không hợp lệ.')
+    groups = []
+    for _, group in table.groupby('class_id', sort=True):
+        groups.append(group.sort_values('path').sample(n=min(2, len(group)), random_state=42))
+    return pd.concat(groups).sort_values(['class_id', 'path']).reset_index(drop=True)
+
+
+def demo_image_bytes(relative_path, split, root=PROJECT_ROOT):
+    if split not in ('validation', 'test'):
+        raise ValueError('Tập dữ liệu không hợp lệ.')
+    data_root = (Path(root) / 'data/raw').resolve()
+    image_path = (data_root / relative_path).resolve()
+    if not image_path.is_relative_to(data_root):
+        raise ValueError('Đường dẫn ảnh nằm ngoài thư mục dữ liệu.')
+    if image_path.is_file():
+        return image_path.read_bytes()
+    name = 'GTSRB_Final_Test_Images.zip' if split == 'test' else 'GTSRB_Final_Training_Images.zip'
+    archive_path = data_root / 'archives' / name
+    if archive_path.exists():
+        with ZipFile(archive_path) as archive:
+            return archive.read(relative_path)
+    raise FileNotFoundError('Chưa có ảnh gốc. Bổ sung ảnh hoặc ZIP GTSRB tương ứng vào data/raw/.')

@@ -12,12 +12,18 @@ import streamlit as st
 PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(PROJECT_ROOT / 'code'))
 from demo_service import (METHODS, ALLOWED_EXTENSIONS, decode_image, load_model,
-                          model_path, model_info, predict, processing_view, read_test_results)
+                          model_path, model_info, predict, processing_view, read_test_results,
+                          demo_catalog, demo_image_bytes, label_name)
 
 
 @st.cache_resource(show_spinner=False, max_entries=3)
 def cached_model(method, root, modification_time, file_size):
     return load_model(method, Path(root))
+
+
+@st.cache_data(show_spinner=False)
+def cached_catalog(split, root, modification_time, file_size):
+    return demo_catalog(split, Path(root))
 
 
 def error_details(error):
@@ -35,7 +41,6 @@ def main():
     .hero {border:1px solid #D8E6FC;background:linear-gradient(115deg,#fff,#EBF3FF);
       border-radius:20px;padding:26px 30px;margin-bottom:20px;}
     .hero h1 {font-size:2.15rem;margin:8px 0;line-height:1.2;}
-    .hero p {color:#526782;font-size:1rem;margin:0;}
     .eyebrow {font-size:.75rem;font-weight:700;color:#2563EB;letter-spacing:.12em;}
     .status {font-size:.85rem;margin:9px 0;color:#526782;}
     .result-name {font-size:1.65rem;font-weight:750;color:#174DAE;line-height:1.3;margin:16px 0;}
@@ -43,9 +48,8 @@ def main():
     div[data-testid="stVerticalBlockBorderWrapper"]>div {border-radius:16px;}
     .stButton button {border-radius:10px;font-weight:650;}
     </style>''', unsafe_allow_html=True)
-    st.markdown('''<div class="hero"><div class="eyebrow">GTSRB · COMPUTER VISION DEMO</div>
-    <h1>Nhận dạng biển báo giao thông</h1>
-    <p>Phân loại 43 lớp biển báo Đức trên bộ dữ liệu GTSRB</p></div>''', unsafe_allow_html=True)
+    st.markdown('''<div class="hero"><div class="eyebrow">GTSRB</div>
+    <h1>Nhận dạng biển báo giao thông</h1></div>''', unsafe_allow_html=True)
 
     resources, errors, signatures = {}, {}, {}
     with st.spinner('Đang kiểm tra và nạp mô hình đã lưu…'):
@@ -66,7 +70,6 @@ def main():
         method = st.selectbox('Chọn mô hình', options, index=default,
                               format_func=lambda key: METHODS[key]['title'], disabled=not ready,
                               key='method')
-        st.caption('Mô hình đã huấn luyện · Không học lại khi dùng demo')
         st.markdown('#### Trạng thái tài nguyên')
         for key, spec in METHODS.items():
             icon, status = ('🟢', 'Sẵn sàng') if key in resources else ('⚪', 'Chưa sẵn sàng')
@@ -81,22 +84,19 @@ def main():
                     st.warning(f'{METHODS[key]["title"]}: chưa nạp được mô hình/cấu hình.')
                     st.caption(str(error))
                     st.code(f'models/{key}_knn.joblib')
-                st.write('Bổ sung file mô hình đã huấn luyện cùng cấu hình trong bundle. '
-                         'Không đổi tên file của một phương pháp khác để thay thế.')
-                st.caption('Hướng dẫn huấn luyện thủ công ở README. Giao diện không gọi huấn luyện.')
+                st.write('Bổ sung mô hình và cấu hình tương ứng.')
 
-    st.info('Ảnh đầu vào cần được cắt chứa một biển báo. Giao diện chỉ phân loại ảnh; '
-            'không tự phát hiện biển báo trong ảnh đường phố và không được kiểm chứng cho biển Việt Nam.')
-
-    source = st.radio('Nguồn ảnh', ['Tải ảnh lên', 'Ảnh mẫu'], horizontal=True, key='image_source')
+    source = st.radio('Nguồn ảnh', ['Tải ảnh lên', 'Ảnh mẫu', 'Ảnh validation / test'],
+                      horizontal=True, key='image_source')
     payload, filename = None, ''
+    dataset_identity = None
     if source == 'Tải ảnh lên':
         uploaded = st.file_uploader('Chọn ảnh JPG, JPEG, PNG hoặc PPM',
                                     type=['jpg', 'jpeg', 'png', 'ppm'], key='upload',
-                                    help='Tối đa 20 MB. Mỗi ảnh chứa một biển báo đã cắt.')
+                                    help='Tối đa 20 MB.')
         if uploaded is not None:
             payload, filename = uploaded.getvalue(), uploaded.name
-    else:
+    elif source == 'Ảnh mẫu':
         folder = PROJECT_ROOT / 'samples'
         samples = sorted(p for p in folder.iterdir() if p.is_file() and p.suffix.lower() in ALLOWED_EXTENSIONS) if folder.is_dir() else []
         if samples:
@@ -108,10 +108,32 @@ def main():
                 error_details(error)
         else:
             st.warning('Chưa có ảnh mẫu. Bổ sung ảnh vào samples/ hoặc chọn Tải ảnh lên.')
+    else:
+        split = st.selectbox('Tập dữ liệu', ['validation', 'test'],
+                             format_func=lambda key: 'Validation' if key == 'validation'
+                             else 'Test', key='dataset_split')
+        try:
+            stat = (PROJECT_ROOT / 'splits' / f'{split}.csv').stat()
+            catalog = cached_catalog(split, str(PROJECT_ROOT), stat.st_mtime_ns, stat.st_size)
+            options = catalog.path.tolist()
+            positions = {path: index + 1 for index, path in enumerate(options)}
+            relative_path = st.selectbox('Chọn ảnh chưa dùng huấn luyện', options,
+                format_func=lambda path: f'{positions[path]:02d} · {"/".join(Path(path).parts[-2:])}',
+                key=f'dataset_image_{split}')
+            dataset_identity = (split, relative_path)
+            filename = Path(relative_path).name
+            payload = demo_image_bytes(relative_path, split, PROJECT_ROOT)
+            if st.checkbox('Xem nhãn chuẩn từ bộ dữ liệu', key='reveal_dataset_label'):
+                class_id = int(catalog.loc[catalog.path == relative_path, 'class_id'].iloc[0])
+                name = label_name(class_id, resources.get(method, {}), PROJECT_ROOT)
+                st.info(f'Nhãn chuẩn: {name} · Class ID {class_id}')
+        except Exception as error:
+            st.warning('Chưa đọc được ảnh validation/test. Cần danh sách trong splits/ và ảnh/ZIP GTSRB trong data/raw/.')
+            error_details(error)
 
     # Khi đổi ảnh, mô hình hoặc tệp mô hình: xóa kết quả cũ trước khi render.
     fingerprint = (source, filename, hashlib.sha256(payload).hexdigest() if payload is not None else None,
-                   method, tuple(signatures.items()))
+                   method, tuple(signatures.items()), dataset_identity)
     if st.session_state.get('input_fingerprint') != fingerprint:
         st.session_state['input_fingerprint'] = fingerprint
         st.session_state.pop('prediction', None)
@@ -135,9 +157,6 @@ def main():
             height, width = image.bgr.shape[:2]
             st.image(cv2.cvtColor(image.bgr, cv2.COLOR_BGR2RGB), width=min(320, max(140, width * 2)))
             st.caption(f'{image.filename} · {width} × {height} pixel · Màu gốc: {image.original_mode}')
-            st.caption('Không suy ra nhãn thật từ ảnh hoặc tên tệp. Ảnh nhỏ có thể mờ khi phóng to.')
-            for note in image.notes:
-                st.info(note)
         classify = st.button('Phân loại', type='primary', width="stretch",
                              disabled=image is None or method not in resources, key='classify')
         if classify:
@@ -158,12 +177,8 @@ def main():
             a.metric('Class ID', result['class_id'])
             b.metric('Thời gian xử lý', f'{result["milliseconds"]:.1f} ms')
             st.write(f'**Phương pháp:** {result["method"]}')
-            st.caption('Thời gian gồm tiền xử lý, trích/chuẩn hóa đặc trưng và dự đoán; không tính nạp mô hình.')
         else:
-            st.markdown('<div class="empty-result">Chưa có kết quả cho ảnh và mô hình hiện tại.<br>'
-                        'Nhấn <b>Phân loại</b> để bắt đầu.</div>', unsafe_allow_html=True)
-        st.caption('Mô hình có thể vẫn trả về một lớp khi ảnh không phải biển báo thuộc GTSRB. '
-                   'Nhãn dự đoán không phải cam kết chính xác.')
+            st.markdown('<div class="empty-result">Chưa có kết quả.</div>', unsafe_allow_html=True)
 
     with st.expander('Xem quá trình xử lý'):
         if image is None or method not in resources:
@@ -171,26 +186,23 @@ def main():
         else:
             bundle = resources[method]
             view = processing_view(bundle, image.bgr)
-            st.image(view['resized_rgb'], caption='Ảnh resize dùng trong pipeline', width=160)
+            st.image(view['resized_rgb'], caption='Ảnh resize', width=160)
             st.write(f'**Số chiều vector:** {bundle["classifier"].n_features_in_}')
             st.json(model_info(bundle), expanded=False)
             if 'hsv' in view:
-                st.markdown('**Các kênh HSV** — chỉ đổi thang hiển thị, không đổi dữ liệu trích đặc trưng.')
+                st.markdown('**Các kênh HSV**')
                 for channel, title, maximum in zip(st.columns(3), ['H · 0–179', 'S · 0–255', 'V · 0–255'], [179, 255, 255]):
                     index = ['H', 'S', 'V'].index(title[0])
                     channel.image(view['hsv'][:, :, index].astype(np.float32) / maximum,
                                   caption=title, width=160)
             if 'gray' in view:
                 a, b = st.columns(2)
-                a.image(view['gray'], caption='Ảnh xám dùng cho HOG', width=160)
-                b.image(view['gradient'], caption='Độ lớn gradient — minh họa cạnh', width=160)
-                st.caption('Gradient Sobel chỉ dùng minh họa, không thay HOG của OpenCV trong dự đoán.')
-                st.markdown('**Vector HOG thực sự được trích**')
+                a.image(view['gray'], caption='Ảnh xám', width=160)
+                b.image(view['gradient'], caption='Độ lớn gradient', width=160)
+                st.markdown('**Vector HOG**')
                 st.line_chart(pd.DataFrame({'HOG': view['hog_vector']}), height=170)
 
     with st.expander('So sánh các phương pháp', expanded=False):
-        st.caption('Cùng một ảnh qua các mô hình sẵn sàng. Thời gian không gồm nạp mô hình; '
-                   'một lượt chạy có thể chịu ảnh hưởng của cache và tải máy.')
         compare = st.button('So sánh các phương pháp', disabled=image is None or not resources, key='compare')
         if compare:
             rows, failures = [], []
@@ -209,20 +221,17 @@ def main():
                 st.dataframe(table[['Phương pháp', 'Nhãn dự đoán', 'Class ID', 'Thời gian (ms)']].round(2),
                              hide_index=True, width="stretch")
                 agree = pd.Series([r['class_id'] for r in rows]).value_counts().max()
-                st.caption(f'Có {agree}/{len(rows)} phương pháp cùng dự đoán một lớp. '
-                           'Sự đồng thuận này không phải xác suất đúng.')
+                st.caption(f'{agree}/{len(rows)} phương pháp cùng nhãn.')
             for title, error in failures:
                 st.warning(f'{title}: không dự đoán được.')
                 with st.expander(f'Chi tiết lỗi {title}'):
                     st.code(error)
 
     with st.expander('Kết quả trên tập kiểm tra'):
-        st.caption('Đây là đánh giá toàn bộ mô hình trên tập test GTSRB, '
-                   'khác với dự đoán của ảnh đang mở. Giao diện chỉ đọc kết quả đã lưu.')
         try:
             records = read_test_results(PROJECT_ROOT)
             if not records:
-                st.info('Chưa có số liệu Accuracy/Macro-F1 của tập test trong results/test/.')
+                st.info('Chưa có số liệu Accuracy/Macro-F1 của tập test.')
             else:
                 table = pd.DataFrame([{'Phương pháp': r['method'], 'Accuracy': f'{100*r["accuracy"]:.2f}%',
                     'Macro-F1': f'{r["macro_f1"]:.4f}', 'Số ảnh test': r['n_images']} for r in records])
@@ -236,7 +245,6 @@ def main():
                 folder = PROJECT_ROOT / 'results/test' / matrix_method
                 if (folder / 'confusion_matrix.png').exists():
                     st.image(str(folder / 'confusion_matrix.png'), width='stretch')
-                    st.caption(f'Nguồn: results/test/{matrix_method}/confusion_matrix.png · Chuẩn hóa theo hàng.')
                 elif (folder / 'confusion_matrix.csv').exists():
                     st.write('Ma trận số đếm đã lưu:')
                     st.dataframe(pd.read_csv(folder / 'confusion_matrix.csv', index_col=0), width="stretch")
